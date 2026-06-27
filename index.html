@@ -1,102 +1,230 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101820">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CP Command">
-  <title>CP Command Center</title>
-  <style>
-    :root{color-scheme:dark;--bg:#101820;--panel:#18242c;--panel2:#20313b;--text:#f3f7f5;--muted:#aab9b4;--line:rgba(255,255,255,.12);--accent:#6ee7b7;--blue:#7dd3fc;--warn:#f9c74f;--danger:#fb7185;--ok:#86efac;--shadow:0 14px 34px rgba(0,0,0,.28);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
-    *{box-sizing:border-box} html,body{min-height:100%}
-    body{margin:0;background:radial-gradient(circle at top left,rgba(110,231,183,.14),transparent 32rem),linear-gradient(180deg,#101820 0%,#0c1116 100%);color:var(--text);-webkit-font-smoothing:antialiased}
-    button,input,textarea{font:inherit}.hidden{display:none!important}
-    .fatal{min-height:100vh;padding:48px 22px;display:grid;align-content:center;gap:12px;background:var(--bg);color:var(--text)}.fatal h1{margin:0;font-size:30px}.fatal p{margin:0;color:var(--muted);font-size:17px;line-height:1.45}
-    .app{min-height:100vh;padding:max(18px,env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
-    .topbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin:6px 0 18px}.eyebrow{margin:0 0 4px;color:var(--accent);font-size:13px;font-weight:800;text-transform:uppercase}.topbar h1{margin:0;font-size:30px;line-height:1.05}.updated{grid-column:1/-1;margin:-6px 0 0;color:var(--muted);font-size:14px;line-height:1.35}
-    .actions{display:flex;gap:8px}.btn{min-height:44px;border:1px solid var(--line);border-radius:8px;padding:0 14px;font-weight:850}.primary{color:#06110d;background:var(--accent)}.secondary{color:var(--text);background:transparent}
-    .content{display:grid;gap:14px}.section-head{display:grid;gap:8px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:0;color:var(--muted);font-size:16px;line-height:1.4}
-    .card{border:1px solid var(--line);border-radius:8px;padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025)),var(--panel);box-shadow:var(--shadow)}.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.card h3{margin:0;font-size:17px;line-height:1.2}.badge{flex:0 0 auto;border-radius:999px;padding:5px 9px;color:#06110d;background:var(--blue);font-size:12px;font-weight:850}.badge.warn{background:var(--warn)}.badge.danger{color:#21050b;background:var(--danger)}.badge.ok{background:var(--ok)}
-    .value{margin:0 0 8px;font-size:27px;font-weight:850;line-height:1.1}.note{margin:0;color:var(--muted);font-size:15px;line-height:1.4}.mini{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.35}
-    .edit{display:grid;gap:8px;margin-top:12px}.edit label{color:var(--muted);font-size:13px;font-weight:800}.edit input,.edit textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;color:var(--text);background:var(--panel2);outline:none}.edit textarea{min-height:88px;resize:vertical}.edit input:focus,.edit textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(110,231,183,.16)}
-    .progress{height:12px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.11);margin-top:12px}.progress span{display:block;height:100%;width:var(--progress,0%);border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--blue))}
-    .toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:4;border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--text);background:rgba(24,36,44,.96);box-shadow:var(--shadow)}
-    .tabs{position:fixed;left:0;right:0;bottom:0;z-index:3;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(12,17,22,.92);backdrop-filter:blur(18px)}.tab{min-width:0;min-height:54px;border:0;border-radius:8px;padding:6px 3px;color:var(--muted);background:transparent;font-size:12px;font-weight:850}.tab.active{color:#06110d;background:var(--accent)}
-    @media(min-width:720px){.app{max-width:760px;margin:0 auto}.content{grid-template-columns:repeat(2,minmax(0,1fr))}.section-head,.wide{grid-column:1/-1}}
-  </style>
-</head>
-<body>
-  <div id="jsError" class="fatal" role="alert">
-    <h1>CP Command Center</h1>
-    <p>The dashboard is loading. If this message stays on screen, JavaScript is off or failed before the app could start. Reopen index.html from Files, or make sure Safari has JavaScript enabled.</p>
-  </div>
-  <div id="app" class="app hidden">
-    <header class="topbar">
-      <div><p class="eyebrow">Live mobile dashboard</p><h1>CP Command Center</h1></div>
-      <div class="actions"><button id="refreshBtn" class="btn secondary" type="button">Refresh</button><button id="saveBtn" class="btn primary" type="button">Save</button></div>
-      <p id="lastUpdated" class="updated">Last updated: loading live data...</p>
-    </header>
-    <main id="content" class="content" aria-live="polite"></main>
-    <nav class="tabs" aria-label="Dashboard sections">
-      <button class="tab active" type="button" data-section="commute">Commute</button>
-      <button class="tab" type="button" data-section="weather">Weather</button>
-      <button class="tab" type="button" data-section="news">News</button>
-      <button class="tab" type="button" data-section="health">Health</button>
-      <button class="tab" type="button" data-section="retirement">Retire</button>
-      <button class="tab" type="button" data-section="ai">AI</button>
-    </nav>
-  </div>
-  <script>
-    "use strict";
-    (function(){
-      var STORAGE_KEY="cp-command-center-v3";
-      var REFRESH_MS=300000;
-      var NWS="https://api.weather.gov";
-      var MTA_LIRR="https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/lirr%2Fgtfs-lirr";
-      var LOC={home:{name:"West Babylon",lat:40.7182,lon:-73.3543},city:{name:"NYC",lat:40.7128,lon:-74.0060}};
-      var el={app:byId("app"),err:byId("jsError"),content:byId("content"),save:byId("saveBtn"),refresh:byId("refreshBtn"),updated:byId("lastUpdated"),tabs:Array.prototype.slice.call(document.querySelectorAll(".tab"))};
-      var copy={commute:["Commute","Live MTA/LIRR feed status. If the live feed cannot be read, the app says so clearly."],weather:["Weather","Live NWS weather for West Babylon and NYC, plus active watches, warnings, and advisories."],news:["Local News","No fake headlines. Add trusted notes manually until a live source is configured."],health:["Health","Manual health snapshot. No made-up wearable data."],retirement:["Retirement","Manual retirement tracker stored on this device."],ai:["AI","AI notes and automation ideas stored on this device."]};
-      var manualDefaults={news:[item("Local news feed","No live news feed configured","This app will not show fake local headlines. Add a trusted source later.","Manual","warn",{editable:true,multiline:true}),item("NYC / MTA notes","Add notes here","Use this for items you want to track manually.","Notes","",{editable:true,multiline:true})],health:[item("Recovery","Add current value","Manual entry. No WHOOP or health API is connected.","Manual","",{editable:true}),item("Sleep","Add current value","Manual entry.","Manual","",{editable:true}),item("Glucose / HRV / RHR","Add current value","Manual entry.","Manual","",{editable:true,multiline:true})],retirement:[item("401k balance","Add balance","Manual entry stored locally.","401k","",{editable:true}),item("457 balance","Add balance","Manual entry stored locally.","457","",{editable:true}),item("Pension estimate","Add estimate","Manual entry stored locally.","Pension","",{editable:true}),item("Retirement progress","0%","Enter a percent to update the bar.","Goal","",{editable:true,progress:true})],ai:[item("AI news watch","Add item","Manual tracking. No fake live AI feed is configured.","Manual","",{editable:true,multiline:true}),item("Codex tasks","Add task","Manual tracking.","Codex","",{editable:true,multiline:true}),item("Automation ideas","Daily commute + weather brief","Ideas saved locally on this device.","Ideas","",{editable:true,multiline:true})]};
-      var state={active:"commute",loading:true,last:null,warning:"",live:{commute:[],weather:[]},manual:loadManual()};
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1020">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CP Command">
+    <title>CP Command Center Version 5.2</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="loading" class="loading-screen">
+      <div class="loader-mark">CP</div>
+      <div>
+        <strong>CP Command Center</strong>
+        <span>Version 5.2</span>
+      </div>
+    </div>
 
-      function byId(id){return document.getElementById(id)}
-      function item(title,value,note,badge,tone,extra){var x=extra||{};x.title=title;x.value=value;x.note=note;x.badge=badge;if(tone)x.badgeTone=tone;return x}
-      function clone(x){return JSON.parse(JSON.stringify(x))}
-      function loadManual(){var base=clone(manualDefaults);try{var raw=localStorage.getItem(STORAGE_KEY);if(!raw)return base;var saved=JSON.parse(raw);if(saved.active)window.__cpccActive=saved.active;if(saved.manual){Object.keys(saved.manual).forEach(function(k){base[k]=saved.manual[k]})}}catch(e){}return base}
-      function save(){readInputs();try{localStorage.setItem(STORAGE_KEY,JSON.stringify({active:state.active,manual:state.manual}));toast("Saved on this iPhone.")}catch(e){toast("Could not save in this browser. The app still works for this session.")}}
-      function nws(pathOrUrl){var url=pathOrUrl.indexOf("http")===0?pathOrUrl:NWS+pathOrUrl;return fetch(url,{cache:"no-store",headers:{"Accept":"application/geo+json, application/json"}}).then(function(r){if(!r.ok)throw new Error("NWS request failed: "+r.status);return r.json()})}
-      function f(c){return typeof c==="number"?Math.round(c*9/5+32):null}
-      function mi(kph){return typeof kph==="number"?Math.round(kph*2.23694):null}
-      function weatherFor(loc){return nws("/points/"+loc.lat+","+loc.lon).then(function(point){var p=point.properties||{};return Promise.all([nws(p.observationStations),p.forecast?nws(p.forecast).catch(function(){return null}):Promise.resolve(null)]).then(function(pair){var stations=pair[0].features||[];if(!stations.length)throw new Error("No NWS observation station found for "+loc.name);return nws(stations[0].id+"/observations/latest").then(function(obs){var op=obs.properties||{};var temp=op.temperature?f(op.temperature.value):null;var wind=op.windSpeed?mi(op.windSpeed.value):null;var period=pair[1]&&pair[1].properties&&pair[1].properties.periods&&pair[1].properties.periods[0];var value=temp===null?"Live weather unavailable":temp+"°F"+(op.textDescription?" "+op.textDescription:"");var notes=[];if(wind!==null)notes.push("Wind "+wind+" mph");if(period&&period.shortForecast)notes.push("Forecast: "+period.shortForecast);if(op.timestamp)notes.push("Observed "+clock(op.timestamp));return item(loc.name,value,notes.join(". ")||"Live NWS observation loaded.",loc.name==="NYC"?"City":"Home",temp===null?"warn":"ok")})})}).catch(function(e){return item(loc.name,"Live weather unavailable",e.message,loc.name==="NYC"?"City":"Home","warn")})}
-      function alerts(){return Promise.all([nws("/alerts/active?point="+LOC.home.lat+","+LOC.home.lon).catch(alertError),nws("/alerts/active?point="+LOC.city.lat+","+LOC.city.lon).catch(alertError)]).then(function(results){var seen={},features=[];results.forEach(function(r){(r.features||[]).forEach(function(ft){var id=ft.id||(ft.properties&&ft.properties.id)||JSON.stringify(ft.properties);if(!seen[id]){seen[id]=true;features.push(ft)}})});if(!features.length)return [item("Watches / warnings / advisories","No active NWS alerts","Checked West Babylon and NYC through the NWS active alerts API.","NWS","ok")];return features.slice(0,4).map(function(ft){var p=ft.properties||{};var tone=p.severity==="Extreme"||p.severity==="Severe"?"danger":"warn";return item(p.event||"NWS alert",p.severity||"Active alert",[p.areaDesc,p.headline||p.description].filter(Boolean).join(". ")||"Active NWS alert.","Alert",tone)})})}
-      function alertError(e){return{features:[],error:e.message}}
-      function mta(){return fetch(MTA_LIRR,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("MTA feed request failed: "+r.status);return r.arrayBuffer()}).then(function(buf){var parsed=parseGtfsAlerts(new Uint8Array(buf));if(!parsed.length)return [item("Babylon Branch status","No LIRR service alerts found","Official MTA GTFS realtime feed loaded. No service-alert entities were decoded in the feed.","MTA","ok")];return parsed.slice(0,4).map(function(a){return item(a.header||"LIRR service alert",a.effect||"Active alert",a.description||"Decoded from the official MTA GTFS realtime feed.","MTA","warn")})}).catch(function(e){return [item("Babylon Branch status","Live MTA feed unavailable","The standalone iPhone app could not read the official MTA LIRR feed. "+e.message,"MTA","warn")]})}
-      function parseGtfsAlerts(bytes){var r=reader(bytes),out=[];while(!r.done()){var tag=r.varint(),field=tag>>3,wire=tag&7;if(field===2&&wire===2){var ent=parseEntity(r.bytes(r.varint()));if(ent)out.push(ent)}else r.skip(wire)}return out}
-      function parseEntity(bytes){var r=reader(bytes),alert=null;while(!r.done()){var tag=r.varint(),field=tag>>3,wire=tag&7;if(field===3&&wire===2)alert=parseAlert(r.bytes(r.varint()));else r.skip(wire)}return alert}
-      function parseAlert(bytes){var r=reader(bytes),a={header:"",description:"",effect:""};while(!r.done()){var tag=r.varint(),field=tag>>3,wire=tag&7;if((field===10||field===11)&&wire===2){var txt=parseTranslated(r.bytes(r.varint()));if(field===10)a.header=txt;else a.description=txt}else if(field===7&&wire===0){a.effect=effect(r.varint())}else r.skip(wire)}return a.header||a.description?a:null}
-      function parseTranslated(bytes){var r=reader(bytes),val="";while(!r.done()){var tag=r.varint(),field=tag>>3,wire=tag&7;if(field===1&&wire===2){var t=parseTranslation(r.bytes(r.varint()));if(t&&!val)val=t}else r.skip(wire)}return val}
-      function parseTranslation(bytes){var r=reader(bytes),val="";while(!r.done()){var tag=r.varint(),field=tag>>3,wire=tag&7;if(field===1&&wire===2)val=utf8(r.bytes(r.varint()));else r.skip(wire)}return val}
-      function reader(bytes){var pos=0;return{done:function(){return pos>=bytes.length},varint:function(){var res=0,shift=0;while(pos<bytes.length){var b=bytes[pos++];res+=(b&127)*Math.pow(2,shift);if(!(b&128))break;shift+=7}return res},bytes:function(len){var out=bytes.slice(pos,pos+len);pos+=len;return out},skip:function(wire){if(wire===0)this.varint();else if(wire===1)pos+=8;else if(wire===2)pos+=this.varint();else if(wire===5)pos+=4;else pos=bytes.length}}}
-      function utf8(bytes){try{if(window.TextDecoder)return new TextDecoder("utf-8").decode(bytes)}catch(e){}var s="";for(var i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);try{return decodeURIComponent(escape(s))}catch(e){return s}}
-      function effect(n){return{1:"No service",2:"Reduced service",3:"Significant delays",4:"Detour",5:"Additional service",6:"Modified service",7:"Other effect",8:"Unknown effect",9:"Stop moved"}[n]||"Service alert"}
-      function refresh(manual){state.loading=true;state.warning="";if(manual)toast("Refreshing live data...");render();return Promise.all([mta(),weatherFor(LOC.home),weatherFor(LOC.city),alerts()]).then(function(res){state.live.commute=res[0];state.live.weather=[res[1],res[2]].concat(res[3]);state.last=new Date();state.loading=false;updateTime();render()}).catch(function(e){state.warning=e.message||"Live refresh failed.";state.loading=false;updateTime();render()})}
-      function readInputs(){Array.prototype.slice.call(document.querySelectorAll("[data-field]")).forEach(function(field){var section=field.getAttribute("data-section"),i=Number(field.getAttribute("data-index")),key=field.getAttribute("data-field");if(state.manual[section]&&state.manual[section][i])state.manual[section][i][key]=field.value})}
-      function current(section){if(section==="commute")return state.loading&&!state.live.commute.length?[item("Babylon Branch status","Loading live MTA feed...","If this fails, the app will say the feed is unavailable instead of showing fake good service.","MTA","warn")]:state.live.commute;if(section==="weather")return state.loading&&!state.live.weather.length?[item("NWS weather","Loading live weather...","Fetching West Babylon, NYC, and active NWS alerts.","NWS","warn")]:state.live.weather;return state.manual[section]||[]}
-      function render(){var section=state.active;if(!copy[section])section="commute";var items=current(section);el.tabs.forEach(function(t){t.classList.toggle("active",t.getAttribute("data-section")===section)});el.content.innerHTML="";el.content.appendChild(sectionHead(copy[section][0],copy[section][1]));if(state.warning)el.content.appendChild(card(item("Live refresh warning","Some live data did not update",state.warning,"Warning","warn"),section,-1));items.forEach(function(it,i){el.content.appendChild(card(it,section,i))});if(section==="retirement")el.content.appendChild(resetCard())}
-      function sectionHead(title,subtitle){var s=document.createElement("section");s.className="section-head wide";s.innerHTML="<h2>"+esc(title)+"</h2><p>"+esc(subtitle)+"</p>";return s}
-      function card(it,section,index){var a=document.createElement("article"),tone=it.badgeTone?" "+it.badgeTone:"",pct=Math.max(0,Math.min(100,parseInt(it.value,10)||0));a.className="card";a.innerHTML='<div class="card-header"><h3>'+esc(it.title)+'</h3><span class="badge'+tone+'">'+esc(it.badge||"Info")+'</span></div><p class="value">'+esc(it.value)+'</p><p class="note">'+esc(it.note)+'</p>'+(it.mini?'<p class="mini">'+esc(it.mini)+'</p>':"")+(it.progress?'<div class="progress"><span style="--progress:'+pct+'%"></span></div>':"")+(it.editable?edit(it,section,index,"value","Value"):"")+(it.editable&&it.multiline?edit(it,section,index,"note","Notes",true):"");return a}
-      function edit(it,section,index,key,label,multi){if(index<0)return"";var id=section+"-"+index+"-"+key,base='id="'+id+'" data-field="'+key+'" data-section="'+section+'" data-index="'+index+'"';return multi?'<div class="edit"><label for="'+id+'">'+label+'</label><textarea '+base+">"+esc(it[key]||"")+"</textarea></div>":'<div class="edit"><label for="'+id+'">'+label+'</label><input '+base+' value="'+attr(it[key]||"")+'"></div>'}
-      function resetCard(){var a=document.createElement("article");a.className="card wide";a.innerHTML='<div class="card-header"><h3>Dashboard data</h3><span class="badge danger">Reset</span></div><p class="note">Reset manual cards. Live weather and MTA data refresh separately.</p><div class="edit"><button id="resetBtn" class="btn secondary" type="button">Reset manual data</button></div>';setTimeout(function(){var b=byId("resetBtn");if(b)b.addEventListener("click",function(){state.manual=clone(manualDefaults);try{localStorage.removeItem(STORAGE_KEY)}catch(e){}render();toast("Manual data reset.")})},0);return a}
-      function updateTime(){el.updated.textContent=state.last?"Last updated: "+clock(state.last)+" - auto-refreshes every 5 minutes":"Last updated: loading live data..."}
-      function clock(v){try{return new Date(v).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}catch(e){return String(v)}}
-      function toast(msg){var old=document.querySelector(".toast"),t=document.createElement("div");if(old)old.parentNode.removeChild(old);t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t)},2200)}
-      function esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-      function attr(v){return esc(v).replace(/`/g,"&#096;")}
-      function boot(){state.active=window.__cpccActive||state.active;el.tabs.forEach(function(tab){tab.addEventListener("click",function(){readInputs();state.active=tab.getAttribute("data-section");render()})});el.save.addEventListener("click",save);el.refresh.addEventListener("click",function(){refresh(true)});updateTime();render();el.err.classList.add("hidden");el.app.classList.remove("hidden");refresh(false);setInterval(function(){refresh(false)},REFRESH_MS)}
-      try{boot()}catch(e){el.err.classList.remove("hidden");el.err.innerHTML="<h1>CP Command Center</h1><p>JavaScript started but hit an error: "+esc(e.message||e)+". Reopen index.html or update Safari.</p>";el.app.classList.add("hidden")}
-    }());
-  </script>
-</body>
+    <div class="weather-motion" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="app-shell">
+      <header class="topbar glass">
+        <div>
+          <p class="eyebrow">CP Command Center</p>
+          <h1 id="screenTitle">Dashboard</h1>
+          <p class="version-line">Version 5.2 · Build: 5.2 · <span id="lastUpdated">Last Updated: --</span></p>
+        </div>
+        <button class="icon-button" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">◐</button>
+      </header>
+
+      <main id="app" class="content" tabindex="-1">
+        <section class="screen active" data-screen="dashboard">
+          <div class="dashboard-grid">
+            <article class="hero-panel glass">
+              <p class="eyebrow" id="todayLabel">Today</p>
+              <h2 id="clock">--:--</h2>
+              <p id="dateLine">--</p>
+            </article>
+            <article class="card glass weather-card">
+              <div class="card-title"><span>🌦</span><h3>Weather</h3></div>
+              <p class="metric">68°F · Clear</p>
+              <p>Humidity 58% · Wind 7 mph · Sunrise 5:25 AM</p>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>🚆</span><h3>Quick Commute</h3></div>
+              <p class="metric">4:10 AM Babylon → Penn</p>
+              <p>On time · Platform pending · No active alerts saved.</p>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>📰</span><h3>Latest News</h3></div>
+              <p>Daily Brief is ready for saved notes, market watch, AI news, and calendar items.</p>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>✓</span><h3>Today's Reminders</h3></div>
+              <ul id="reminderList" class="compact-list"></ul>
+              <form id="reminderForm" class="inline-form">
+                <input name="reminder" placeholder="Add reminder" autocomplete="off">
+                <button>Add</button>
+              </form>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>❤️</span><h3>Health Summary</h3></div>
+              <p id="healthSummary">No health entries yet.</p>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>🚗</span><h3>Vehicle Summary</h3></div>
+              <p id="vehicleSummary">No fuel entries yet.</p>
+            </article>
+            <article class="card glass">
+              <div class="card-title"><span>💰</span><h3>Retirement Summary</h3></div>
+              <p id="retirementSummary">No retirement entries yet.</p>
+            </article>
+            <article class="card glass quick-actions">
+              <div class="card-title"><span>⚡</span><h3>Quick Actions</h3></div>
+              <button data-jump="reader">Open Reader</button>
+              <button data-jump="mpg">Log Fuel</button>
+              <button data-jump="health">Log Health</button>
+              <button data-jump="status">Build Status</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="commute">
+          <div class="page-grid">
+            <article class="card glass highlight">
+              <div class="card-title"><span>🚆</span><h3>Babylon → Penn</h3></div>
+              <p class="metric">Normal train: 4:10 AM</p>
+              <p>Train status: saved schedule · Delay status: unknown offline · Platform: when available</p>
+            </article>
+            <article class="card glass"><h3>Service Alerts</h3><p>No live integration is configured. Saved alerts and manual notes appear here.</p><textarea data-store="commuteAlerts" placeholder="Add commute alerts or notes"></textarea></article>
+            <article class="card glass"><h3>Commute Weather</h3><p>Cool morning visibility · wind 7 mph · rain risk low.</p></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="briefing">
+          <div class="page-grid">
+            <article class="card glass span-2"><div class="card-title"><span>📰</span><h3>Morning Briefing</h3></div><p>Last updated: <span id="briefUpdated">--</span></p></article>
+            <article class="card glass"><h3>Weather</h3><p>Clear start, moderate humidity, low rain risk.</p></article>
+            <article class="card glass"><h3>Commute</h3><p>4:10 AM Babylon train is highlighted.</p></article>
+            <article class="card glass"><h3>Top News</h3><textarea data-store="topNews" placeholder="Paste top news notes"></textarea></article>
+            <article class="card glass"><h3>AI News</h3><textarea data-store="aiNews" placeholder="Paste AI news notes"></textarea></article>
+            <article class="card glass"><h3>Markets</h3><textarea data-store="markets" placeholder="Market notes"></textarea></article>
+            <article class="card glass"><h3>Calendar</h3><textarea data-store="calendar" placeholder="Calendar notes"></textarea></article>
+            <article class="card glass"><h3>Tasks</h3><textarea data-store="tasks" placeholder="Task list"></textarea></article>
+            <article class="card glass"><h3>Quick Notes</h3><textarea data-store="quickNotes" placeholder="Anything important"></textarea></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="weather">
+          <div class="page-grid">
+            <article class="hero-panel glass span-2"><p class="eyebrow">Current Conditions</p><h2>68°F · Clear</h2><p>Humidity 58% · Wind 7 mph · Sunrise 5:25 AM · Sunset 8:31 PM</p></article>
+            <article class="card glass span-2 radar"><h3>Animated Radar</h3><div class="radar-sweep"></div></article>
+            <article class="card glass"><h3>Hourly</h3><p>6 AM 67° · 9 AM 72° · Noon 78° · 3 PM 81° · 6 PM 76°</p></article>
+            <article class="card glass"><h3>10-Day Forecast</h3><p>Mostly clear, warmer midweek, scattered showers possible late week.</p></article>
+            <article class="card glass"><h3>Alerts</h3><p>Rain: low · Heat: none · Wind: normal</p></article>
+          </div>
+        </section>
+
+        <section class="screen reader-screen" data-screen="reader">
+          <div class="reader-toolbar glass">
+            <input id="readerTitle" placeholder="Reading title">
+            <label class="file-button">Import<input id="fileImport" type="file" accept=".txt,text/plain"></label>
+            <button id="saveReading">Save</button>
+            <button id="favoriteReading">☆</button>
+            <button id="fullscreenReader">⛶</button>
+          </div>
+          <div class="reader-layout">
+            <aside class="card glass reader-library">
+              <h3>Library</h3>
+              <div id="libraryList"></div>
+              <h3>Recent</h3>
+              <div id="historyList"></div>
+            </aside>
+            <article class="card glass reader-main">
+              <textarea id="readerText" class="reader-editor" placeholder="Paste text here or import a text file. Reader Mode will chunk long stories, track progress, and continue section by section."></textarea>
+              <div class="reader-status">
+                <span id="sectionStatus">Section 0 of 0</span>
+                <span id="readingTime">Estimated reading time: 0 min</span>
+              </div>
+              <progress id="readerProgress" value="0" max="100"></progress>
+              <div class="controls">
+                <button id="playReader">▶ Play</button>
+                <button id="pauseReader">⏸ Pause</button>
+                <button id="resumeReader">▶ Resume</button>
+                <button id="stopReader">■ Stop</button>
+                <button id="restartReader">↺ Restart</button>
+              </div>
+              <div class="settings-row">
+                <label>Speed<select id="speechRate"><option>0.8</option><option selected>1.0</option><option>1.2</option><option>1.5</option><option>2.0</option></select></label>
+                <label>Voice<select id="voiceSelect"></select></label>
+                <label><input id="largeText" type="checkbox"> Large text</label>
+                <label><input id="darkReader" type="checkbox"> Dark reading mode</label>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="mpg">
+          <div class="page-grid">
+            <article class="card glass span-2"><h3>MPG Tracker</h3><form id="fuelForm" class="form-grid"><input name="vehicle" placeholder="Vehicle name" required><input name="lastMileage" type="number" placeholder="Last mileage" required><input name="currentMileage" type="number" placeholder="Current mileage" required><input name="gallons" type="number" step="0.01" placeholder="Gallons" required><input name="cost" type="number" step="0.01" placeholder="Fuel cost" required><button>Save Fuel Entry</button></form></article>
+            <article class="card glass"><h3>Vehicle Selector</h3><select id="vehicleSelect"></select><p id="mpgStats">No entries.</p></article>
+            <article class="card glass"><h3>Fuel History</h3><div id="fuelHistory"></div></article>
+            <article class="card glass span-2"><canvas id="mpgChart" height="130"></canvas></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="retirement">
+          <div class="page-grid">
+            <article class="card glass span-2"><h3>Retirement</h3><form id="retirementForm" class="form-grid"><input name="k401" type="number" placeholder="401(k)"><input name="b457" type="number" placeholder="457(b)"><input name="pension" type="number" placeholder="Pension estimate"><input name="contribution" type="number" placeholder="Monthly contribution"><input name="netWorth" type="number" placeholder="Net worth estimate"><button>Save Snapshot</button></form></article>
+            <article class="card glass"><h3>Countdown</h3><p id="retirementCountdown">Set a target date in Settings.</p></article>
+            <article class="card glass"><h3>Summary</h3><p id="retirementStats">No snapshots.</p></article>
+            <article class="card glass span-2"><canvas id="retirementChart" height="130"></canvas></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="health">
+          <div class="page-grid">
+            <article class="card glass span-2"><h3>Health Dashboard</h3><form id="healthForm" class="form-grid"><input name="bp" placeholder="Blood pressure"><input name="weight" type="number" step="0.1" placeholder="Weight"><input name="sleep" type="number" step="0.1" placeholder="Sleep hours"><input name="recovery" type="number" placeholder="Recovery %"><input name="heartRate" type="number" placeholder="Heart rate"><input name="glucose" type="number" placeholder="Glucose"><input name="notes" placeholder="Daily notes"><button>Save Health Entry</button></form></article>
+            <article class="card glass"><h3>Latest</h3><p id="latestHealth">No entries.</p></article>
+            <article class="card glass span-2"><canvas id="healthChart" height="130"></canvas></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="home">
+          <div class="page-grid">
+            <article class="card glass span-2"><h3>Home Maintenance</h3><form id="homeForm" class="form-grid"><input name="area" placeholder="Project / appliance / vehicle"><input name="task" placeholder="Maintenance task"><input name="due" type="date"><button>Save Item</button></form></article>
+            <article class="card glass"><h3>Seasonal Reminders</h3><p>HVAC service · filters · smoke detectors · gutters · vehicle checks.</p></article>
+            <article class="card glass"><h3>History</h3><div id="homeHistory"></div></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="settings">
+          <div class="page-grid">
+            <article class="card glass"><h3>Theme</h3><select id="themeSelect"><option value="auto">Automatic</option><option value="dark">Dark Mode</option><option value="light">Light Mode</option></select></article>
+            <article class="card glass"><h3>Reader Settings</h3><label><input id="autoSaveReader" type="checkbox" checked> Auto-save current reading</label></article>
+            <article class="card glass"><h3>Units</h3><select data-store="units"><option>Imperial</option><option>Metric</option></select></article>
+            <article class="card glass"><h3>Notifications</h3><label><input data-store-check="notifications" type="checkbox"> Enable local reminder preference</label></article>
+            <article class="card glass span-2"><h3>Data Backup</h3><div class="controls"><button id="exportData">Export</button><label class="file-button">Import<input id="importData" type="file" accept="application/json"></label><button id="resetData" class="danger">Reset</button></div><textarea id="backupOutput" readonly placeholder="Exported backup appears here"></textarea></article>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="status">
+          <div class="page-grid">
+            <article class="card glass span-2"><div class="card-title"><span>⚙</span><h3>Build Status</h3></div><dl class="status-list" id="statusList"></dl></article>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav glass" aria-label="Primary">
+        <button class="active" data-nav="dashboard"><span>🏠</span><b>Dashboard</b></button>
+        <button data-nav="commute"><span>🚆</span><b>Commute</b></button>
+        <button data-nav="briefing"><span>📰</span><b>Briefing</b></button>
+        <button data-nav="weather"><span>🌦</span><b>Weather</b></button>
+        <button data-nav="reader"><span>📖</span><b>Reader</b></button>
+        <button data-nav="mpg"><span>🚗</span><b>MPG</b></button>
+        <button data-nav="retirement"><span>💰</span><b>Retirement</b></button>
+        <button data-nav="health"><span>❤️</span><b>Health</b></button>
+        <button data-nav="home"><span>🏡</span><b>Home</b></button>
+        <button data-nav="settings"><span>⚙</span><b>Settings</b></button>
+      </nav>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
 </html>
